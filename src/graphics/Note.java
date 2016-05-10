@@ -25,16 +25,23 @@ import java.io.*;
 
 public class Note extends Group
 {
+
+    private String name;
+
     @FXML
     private TextArea textArea;
     private PrintWriter writer;
     private boolean saved;
+    Note shit = this;
 
-    public Note() throws IOException {
+    public Note(String name) throws IOException {
+        shit.name = name;
+
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
                 "Note.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
+        fxmlLoader.setRoot(shit);
+        fxmlLoader.setController(shit);
 
         try {
             fxmlLoader.load();
@@ -42,15 +49,12 @@ public class Note extends Group
             throw new RuntimeException(exception);
         }
 
-
-        Note neg = this;
-
         textArea.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (!newValue && !saved) {
-                    neg.salvestaTekst();
-                    saved = true;
+                    shit.salvestaTekst();
+                    shit.saved = true;
                 }
             }
         });
@@ -58,9 +62,9 @@ public class Note extends Group
     }
     void salvestaTekst() {
         try {
-            writer = new PrintWriter(new BufferedWriter(new FileWriter("name2123.txt")), true);
-            writer.println(this.getText());
-            writer.close();
+            shit.writer = new PrintWriter(new BufferedWriter(new FileWriter("name2123.txt")), true);
+            shit.writer.println(this.getText());
+            shit.writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,6 +83,6 @@ public class Note extends Group
     }
 
     public StringProperty textProperty() {
-        return textArea.textProperty();
+        return shit.textArea.textProperty();
     }
 }

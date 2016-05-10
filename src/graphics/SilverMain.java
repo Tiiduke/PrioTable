@@ -33,7 +33,7 @@ public class SilverMain extends Application {
         //Parent root = FXMLLoader.load(getClass().getResource("MainWindow.fxml"));
 
         Group main_group = new Group();
-        main_group.getChildren().add(new Note());
+        main_group.getChildren().add(new Note("Test"));
 
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(main_group));
