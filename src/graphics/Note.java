@@ -62,7 +62,7 @@ public class Note extends Group
     }
     void salvestaTekst() {
         try {
-            shit.writer = new PrintWriter(new BufferedWriter(new FileWriter("name2123.txt")), true);
+            shit.writer = new PrintWriter(new BufferedWriter(new FileWriter(shit.name + ".txt")), true);
             shit.writer.println(this.getText());
             shit.writer.close();
         } catch (IOException e) {
