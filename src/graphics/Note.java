@@ -5,10 +5,19 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.shape.Rectangle;
+import org.w3c.dom.css.Rect;
 
-
+import java.awt.*;
 import java.io.*;
 
 
@@ -23,66 +32,31 @@ import java.io.*;
 //the main thing is here
 
 
-public class Note extends Group
-{
-
-    private String name;
+public class Note {
 
     @FXML
-    private TextArea textArea;
-    private PrintWriter writer;
     private boolean saved;
-    Note shit = this;
+    private Pane pane;
 
-    public Note(String name) throws IOException {
-        shit.name = name;
+    public Note(GridPane parentGridPane) throws IOException {
+
+        Pane pane = FXMLLoader.load(getClass().getResource("Note.fxml"));
+
+        pane.setStyle("-fx-background-color: yellow;");
+
+        this.pane = pane;
+
+        pane.widthProperty().addListener(observable -> pane.resize(parentGridPane.getWidth() / 3, parentGridPane.getHeight() / 2));
+        pane.heightProperty().addListener(observable -> pane.resize(parentGridPane.getWidth() / 3, parentGridPane.getHeight() / 2));
+
+        TextArea ta = (TextArea) pane.getChildren().get(0);
+        ta.widthProperty().addListener(observable -> ta.resize(pane.getWidth() * 0.85, pane.getHeight()*0.75));
+        ta.heightProperty().addListener(observable -> ta.resize(pane.getWidth() * 0.85, pane.getHeight() * 0.75));
 
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
-                "Note.fxml"));
-        fxmlLoader.setRoot(shit);
-        fxmlLoader.setController(shit);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        textArea.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue && !saved) {
-                    shit.salvestaTekst();
-                    shit.saved = true;
-                }
-            }
-        });
-        textArea.setOnKeyTyped(event -> saved = false);
-    }
-    void salvestaTekst() {
-        try {
-            shit.writer = new PrintWriter(new BufferedWriter(new FileWriter(shit.name + ".txt")), true);
-            shit.writer.println(this.getText());
-            shit.writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void test(){
-        System.out.println("b0ss");
-    }
-
-    public String getText() {
-        return textProperty().get();
-    }
-
-    public void setText(String value) {
-        textProperty().set(value);
-    }
-
-    public StringProperty textProperty() {
-        return shit.textArea.textProperty();
+    public Pane getPane() {
+        return pane;
     }
 }
