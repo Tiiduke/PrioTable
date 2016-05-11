@@ -109,8 +109,6 @@ public class Main extends Application {
             if (node instanceof GridPane)
                 ((GridPane) node).setGridLinesVisible(true);
 
-        GridPane urgImp = getGridPaneFromMainGridPane(true, true, mainGridPane);
-
         //Näidis lisamisest ja kustutamisest
         /*deleteNoteFromGridPane(0, urgImp, 2, 0);
         addNewNoteToGridPane(0, urgImp);
