@@ -1,8 +1,6 @@
 package graphics;
 
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,27 +12,13 @@ import javafx.scene.layout.Pane;
 
 import java.io.*;
 
-
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-// MARKUS DID SOME THINGS HERE
-//the main thing is here
-
-
 public class Note {
 
 
     private boolean saved;
     String name;
     PrintWriter writer;
-    Note tiit = this;
-
-
+    Note note = this;
     @FXML
     private Pane pane;
     @FXML
@@ -42,13 +26,13 @@ public class Note {
 
 
     public Note(GridPane parentGridPane, String name) throws IOException {
-        tiit.name = name;
+        note.name = name;
 
         Pane pane = FXMLLoader.load(getClass().getResource("Note.fxml"));
 
         pane.setStyle("-fx-background-color: yellow;");
 
-        tiit.pane = pane;
+        note.pane = pane;
 
         pane.widthProperty().addListener(observable -> pane.resize(parentGridPane.getWidth() / 3, parentGridPane.getHeight() / 2));
         pane.heightProperty().addListener(observable -> pane.resize(parentGridPane.getWidth() / 3, parentGridPane.getHeight() / 2));
@@ -58,27 +42,26 @@ public class Note {
         textArea.heightProperty().addListener(observable -> textArea.resize(pane.getWidth() * 0.85, pane.getHeight() * 0.75));
 
 
-        tiit.pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+        note.pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (Main.mouseState == MouseState.DELETE) {
-//                    System.out.println();
-//                    System.out.println(( (GridPane) tiit.getPane().getParent()).getChildren().remove(this));
-                    System.out.println(tiit.pane.getChildren().contains(tiit.getPane()));
+                    System.out.println(note.pane.getChildren().contains(note.getPane()));
                 } else if (Main.mouseState == MouseState.MARK_DONE) {
-                    tiit.finalizeNote();
+                    note.finalizeNote();
                 }
             }
         });
     }
     public void finalizeNote() {
         try {
-            String string = tiit.getText();
-            tiit.writer = new PrintWriter(new BufferedWriter(new FileWriter("notes/" + tiit.name + ".txt")));
-            tiit.writer.print(string);
-            tiit.writer.close();
-            tiit.getPane().getChildren().remove(0);
-            tiit.getPane().getChildren().add(new Label(string));
+            String string = note.getText();
+            note.writer = new PrintWriter(new BufferedWriter(new FileWriter(note.name + ".txt")));
+            note.writer.print(string);
+            note.writer.close();
+            note.getPane().getChildren().remove(0);
+            note.getPane().getChildren().add(new Label(string));
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -89,7 +72,7 @@ public class Note {
     }
 
     public StringProperty textProperty() {
-        return tiit.textArea.textProperty();
+        return note.textArea.textProperty();
     }
 
     public Pane getPane() {

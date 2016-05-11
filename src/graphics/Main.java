@@ -1,31 +1,21 @@
 package graphics;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
-
-import static java.lang.Double.MAX_VALUE;
 
 public class Main extends Application {
     static Map<String, Note> notes = new HashMap<>();
@@ -66,11 +56,11 @@ public class Main extends Application {
                     if (!notes.keySet().contains(a)) {
                         x = j;
                         y = i;
-                        throw new LOOPBREAKERRR();
+                        throw new loopBreaker();
                     }
                 }
             }
-        } catch (LOOPBREAKERRR e) {}
+        } catch (loopBreaker e) {}
         Note note = new Note(pane, a);
         notes.put(a, note);
         pane.add(note.getPane(), x, y);
@@ -142,7 +132,6 @@ public class Main extends Application {
 
         primaryStage.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);
