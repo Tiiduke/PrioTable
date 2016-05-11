@@ -46,9 +46,20 @@ public class Note {
         textArea = (TextArea) pane.getChildren().get(0);
         textArea.widthProperty().addListener(observable -> textArea.resize(pane.getWidth() * 0.85, pane.getHeight()*0.75));
         textArea.heightProperty().addListener(observable -> textArea.resize(pane.getWidth() * 0.85, pane.getHeight() * 0.75));
-
     }
 
+
+    public void writeNoteToMarkDoneFile(){
+        try {
+            File file = new File("donenotes.txt");
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            pw.println(textArea.getText());
+            pw.close();
+        }
+        catch (IOException e) {
+            System.out.println("Vigane fail");
+        }
+    }
 
     public Pane getPane() {
         return this.pane;

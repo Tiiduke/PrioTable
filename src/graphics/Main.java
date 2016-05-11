@@ -17,10 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -29,22 +26,40 @@ import static java.lang.Double.MAX_VALUE;
 
 public class Main extends Application {
 
-    private static MouseState mouseState = MouseState.CLICK;
+    public static MouseState mouseState = MouseState.CLICK;
 
     private static HashMap<String, Note> noteHashMap = new HashMap<>();
 
     private GridPane getGridPaneFromMainGridPane(boolean urgent, boolean important, GridPane mainGridPane) {
         GridPane temp;
-        if (urgent && important)
+        int gridPaneIdentifier;
+        if (urgent && important) {
             temp = (GridPane) mainGridPane.getChildren().get(4);
-        else if (urgent)
+            gridPaneIdentifier = 0;
+        }
+        else if (urgent) {
             temp = (GridPane) mainGridPane.getChildren().get(5);
-        else if (important)
+            gridPaneIdentifier = 1;
+        }
+        else if (important) {
             temp = (GridPane) mainGridPane.getChildren().get(6);
-        else
+            gridPaneIdentifier = 2;
+        }
+        else {
             temp = (GridPane) mainGridPane.getChildren().get(7);
+            gridPaneIdentifier = 3;
+        }
         temp.widthProperty().addListener(observable -> temp.resize(mainGridPane.getWidth()/2 - 25, mainGridPane.getHeight()/2 - 25));
         temp.heightProperty().addListener(observable -> temp.resize(mainGridPane.getWidth()/2 - 25, mainGridPane.getHeight()/2 - 25));
+        temp.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (mouseState == MouseState.ADD) {
+                    addNewNoteToGridPane(gridPaneIdentifier, temp);
+                    mouseState = MouseState.CLICK;
+                }
+            }
+        });
         return temp;
     }
 
@@ -70,25 +85,59 @@ public class Main extends Application {
         markDone.setOnMouseClicked(observable -> mouseState = MouseState.MARK_DONE);
     }
 
-    private void addNewNoteToGridPane(int gridPaneIndex, GridPane gridPane) throws IOException{
+    private void addNewNoteToGridPane(int gridPaneIndex, GridPane gridPane) {
 
         String temp;
-        for (int i = 0; i < 2; i++)
-            for(int j = 0; j < 3; j++) {
-                temp = gridPaneIndex + " " + j + " " + i;
-                if (noteHashMap.get(temp) == null) {
-                    Note note = new Note(gridPane);
-                    noteHashMap.put(temp, note);
-                    gridPane.add(note.getPane(), j, i);
-                    return;
+        try {
+            for (int i = 0; i < 2; i++)
+                for(int j = 0; j < 3; j++) {
+                    temp = gridPaneIndex + " " + j + " " + i;
+                    if (noteHashMap.get(temp) == null) {
+                        Note note = new Note(gridPane);
+                        addListenersToPane(note.getPane(), gridPane);
+                        noteHashMap.put(temp, note);
+                        gridPane.add(note.getPane(), j, i);
+                        return;
+                    }
                 }
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteNoteFromGridPane(int gridPaneIndex, GridPane gridPane, int column, int row) {
         Note temp = noteHashMap.get(gridPaneIndex + " " + column + " " + row);
         noteHashMap.remove(gridPaneIndex + " " + column + " " + row);
         gridPane.getChildren().remove(temp.getPane());
+    }
+
+    private void addListenersToPane(Pane pane, GridPane gridPane) {
+        pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+
+                if (mouseState == MouseState.DELETE) {
+                    for (Map.Entry<String, Note> entry : noteHashMap.entrySet()) {
+                        if (entry.getValue().getPane() == pane) {
+                            String[] temp = entry.getKey().split(" ");
+                            deleteNoteFromGridPane(Integer.parseInt(temp[0]), gridPane, Integer.parseInt(temp[1]), Integer.parseInt(temp[2]));
+                        }
+                    }
+                    mouseState = MouseState.CLICK;
+                } else if (mouseState == MouseState.MARK_DONE) {
+                    for (Map.Entry<String, Note> entry : noteHashMap.entrySet()) {
+                        if (entry.getValue().getPane() == pane) {
+                            String[] temp = entry.getKey().split(" ");
+                            Note tempNote = entry.getValue();
+                            tempNote.writeNoteToMarkDoneFile();
+                            deleteNoteFromGridPane(Integer.parseInt(temp[0]), gridPane, Integer.parseInt(temp[1]), Integer.parseInt(temp[2]));
+                        }
+                    }
+                    mouseState = MouseState.CLICK;
+                }
+            }
+        });
     }
 
 
@@ -109,6 +158,13 @@ public class Main extends Application {
             if (node instanceof GridPane)
                 ((GridPane) node).setGridLinesVisible(true);
 
+        GridPane[] childGridPanes = new GridPane[] {
+                getGridPaneFromMainGridPane(true, true, mainGridPane),
+                getGridPaneFromMainGridPane(true, false, mainGridPane),
+                getGridPaneFromMainGridPane(false, true, mainGridPane),
+                getGridPaneFromMainGridPane(false, false, mainGridPane)
+        };
+
         //Näidis lisamisest ja kustutamisest
         /*deleteNoteFromGridPane(0, urgImp, 2, 0);
         addNewNoteToGridPane(0, urgImp);
@@ -117,6 +173,10 @@ public class Main extends Application {
         notUrgImp index = 2
         notUrgNotImp index = 3
         */
+
+        addNewNoteToGridPane(0, childGridPanes[0]);
+        addNewNoteToGridPane(0, childGridPanes[0]);
+        addNewNoteToGridPane(0, childGridPanes[0]);
 
         ToolBar mainToolBar = (ToolBar) pane.getChildren().get(1);
         addButtonFunctionalityToToolBar(mainToolBar);
