@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 <Pane maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.Controller">
@@ -77,8 +75,8 @@
       <ToolBar maxHeight="-Infinity" maxWidth="Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="Infinity">
         <items>
           <Button mnemonicParsing="false" text="Add Note" />
-            <Button mnemonicParsing="false" text="Delete Note" />
-            <Button mnemonicParsing="false" text="Mark Done" />
+          <Button mnemonicParsing="false" text="Delete Note" />
+          <Button mnemonicParsing="false" text="Mark Done" />
         </items>
       </ToolBar>
    </children>

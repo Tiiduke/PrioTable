@@ -10,20 +10,28 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-
-import javax.tools.Tool;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 import static java.lang.Double.MAX_VALUE;
 
 public class Main extends Application {
+    static Map<String, Note> notes = new HashMap<>();
+    static GridPane mainGridPane;
 
-    MouseState mouseState = MouseState.CLICK;
+    static MouseState mouseState = MouseState.CLICK;
 
     private GridPane getGridPaneFromMainGridPane(boolean urgent, boolean important, GridPane mainGridPane) {
         GridPane temp;
@@ -44,6 +52,30 @@ public class Main extends Application {
         return (Button) mainToolBar.getItems().get(number);
     }
 
+    static void addNote(GridPane pane) throws IOException {
+
+
+        int x = 0;
+        int y = 0;
+        String a = pane.hashCode() + "";
+
+        try {
+            for (int i=0; i<2; i++) {
+                for (int j=0; j<3; j++) {
+                    a += String.valueOf(j) + " " + String.valueOf(i);
+                    if (!notes.keySet().contains(a)) {
+                        x = j;
+                        y = i;
+                        throw new LOOPBREAKERRR();
+                    }
+                }
+            }
+        } catch (LOOPBREAKERRR e) {}
+        Note note = new Note(pane, a);
+        notes.put(a, note);
+        pane.add(note.getPane(), x, y);
+    }
+
     private void addButtonFunctionalityToToolBar (ToolBar toolBar) {
         addFunctionalityToAddNote(getButtonFromMainToolBar(0, toolBar));
         addFunctionalityToDeleteNote(getButtonFromMainToolBar(1, toolBar));
@@ -62,19 +94,17 @@ public class Main extends Application {
         markDone.setOnMouseClicked(observable -> mouseState = MouseState.MARK_DONE);
     }
 
+
     @Override
     public void start(final Stage primaryStage) throws Exception{
-        //Loome stseeni juure ja stseeni
         Group root = new Group();
         Scene scene = new Scene(root, 1300, 800);
 
-        //Loome põhipaani, mille saab vastavast fxml failist ning seome selle suuruse stseeni suurusega
         final Pane pane = FXMLLoader.load(getClass().getResource("MainWindow.fxml"));
         pane.minHeightProperty().bind(scene.heightProperty());
         pane.minWidthProperty().bind(scene.widthProperty());
 
-        //Pääseme ligi põhilisele GridPane objektile, mille seome stseeni suurusega
-        GridPane mainGridPane = (GridPane) pane.getChildren().get(0);
+        mainGridPane = (GridPane) pane.getChildren().get(0);
         mainGridPane.widthProperty().addListener(observable -> mainGridPane.resize(scene.getWidth(), scene.getHeight()));
         mainGridPane.heightProperty().addListener(observable -> mainGridPane.resize(scene.getWidth(), scene.getHeight()));
         mainGridPane.setGridLinesVisible(true);
@@ -82,22 +112,30 @@ public class Main extends Application {
             if (node instanceof GridPane)
                 ((GridPane) node).setGridLinesVisible(true);
 
+        for (int i=4; i<8; i++) {
+            GridPane a = (GridPane) mainGridPane.getChildren().get(i);
+            a.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    if (mouseState == MouseState.ADD) {
+                        try {
+                            addNote(a);
+                        } catch (IOException breaka) {}
+                    }
+                }
+            });
+        }
+
 
         GridPane urgImp = getGridPaneFromMainGridPane(true, true, mainGridPane);
 
-        Note note = new Note(urgImp);
-        Note note2 = new Note(urgImp);
-
-        urgImp.add(note.getPane(), 2, 1);
-        urgImp.add(note2.getPane(), 1, 1);
+        addNote(urgImp);
+        addNote(urgImp);
 
 
-        //Loome ToolBari ja lisame nuppudele funktsionaalsuse
         ToolBar mainToolBar = (ToolBar) pane.getChildren().get(1);
         addButtonFunctionalityToToolBar(mainToolBar);
 
-
-        //Lisame juurele paani ning määrame stseeni
         root.getChildren().addAll(pane);
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(scene);
