@@ -1,38 +1,36 @@
 package graphics;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
-
-import static java.lang.Double.MAX_VALUE;
 
 public class Main extends Application {
 
     public static MouseState mouseState = MouseState.CLICK;
 
     private static HashMap<String, Note> noteHashMap = new HashMap<>();
-
+    //Meetod child GridPane'ide saamine parentist vastavate paremeetrite järgi
     private GridPane getGridPaneFromMainGridPane(boolean urgent, boolean important, GridPane mainGridPane) {
         GridPane temp;
         int gridPaneIdentifier;
+        /* Väga spagetine kood, mis sisaldab palju magic variable'id, kuid oli keeruline teha paremini
+         * Võtab vanemast vastava GridPane objekti, lisab sellele vastavad kuularid suuruse muutmiseks ja hiirekliki tuvastamiseks
+         */
+
         if (urgent && important) {
             temp = (GridPane) mainGridPane.getChildren().get(4);
             gridPaneIdentifier = 0;
@@ -62,17 +60,18 @@ public class Main extends Application {
         });
         return temp;
     }
-
+    //Meetod ToolBaril olevatele nuppudele ligi pääsemiseks
     private Button getButtonFromMainToolBar(int number, ToolBar mainToolBar) {
         return (Button) mainToolBar.getItems().get(number);
     }
-
+    //Meetod kõigile nuppudele ToolBaril funktsionaalsuse lisamiseks
     private void addButtonFunctionalityToToolBar (ToolBar toolBar) {
+        //Jällegi spagetine kood, mis sisaldab n-ö magic variable'eid
         addFunctionalityToAddNote(getButtonFromMainToolBar(0, toolBar));
         addFunctionalityToDeleteNote(getButtonFromMainToolBar(1, toolBar));
         addFunctionalityToMarkDone(getButtonFromMainToolBar(2, toolBar));
     }
-
+    //Kolm järgnevat meetodit on vastavatele nuppudele funktsionaalsuse lisamiseks
     private void addFunctionalityToAddNote (Button addNote) {
         addNote.setOnMouseClicked(observable -> mouseState = MouseState.ADD);
     }
@@ -84,9 +83,9 @@ public class Main extends Application {
     private void addFunctionalityToMarkDone (Button markDone) {
         markDone.setOnMouseClicked(observable -> mouseState = MouseState.MARK_DONE);
     }
-
+    //Meetod GridPane'ile esimesse vabasse kohta uue märkme lisamiseks
     private void addNewNoteToGridPane(int gridPaneIndex, GridPane gridPane) {
-
+        //Jällegi spagetine kood, mis sisaldab palju magic variable'eid
         String temp;
         try {
             for (int i = 0; i < 2; i++)
@@ -104,13 +103,13 @@ public class Main extends Application {
             e.printStackTrace();
         }
     }
-
+    //Meetod GridPane'ist vastava märkme lisamiseks
     private void deleteNoteFromGridPane(int gridPaneIndex, GridPane gridPane, int column, int row) {
         Note temp = noteHashMap.get(gridPaneIndex + " " + column + " " + row);
         noteHashMap.remove(gridPaneIndex + " " + column + " " + row);
         gridPane.getChildren().remove(temp.getPane());
     }
-
+    //Meetod Note'is olevale Pane'ile funktsionaalsuse lisamiseks
     private void addListenersToPane(Pane pane, GridPane gridPane) {
         pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
@@ -145,11 +144,13 @@ public class Main extends Application {
     public void start(final Stage primaryStage) throws Exception{
         Group root = new Group();
         Scene scene = new Scene(root, 1300, 800);
-
+        //Loeb vastavast fxml failist põhikujunduse ja seob selle suuruse stseeni suurusega
         final Pane pane = FXMLLoader.load(getClass().getResource("MainWindow.fxml"));
         pane.minHeightProperty().bind(scene.heightProperty());
         pane.minWidthProperty().bind(scene.widthProperty());
 
+        //Saab peapaanist põhilise GridPane elemendi, lisab sellele suurust muutvad kuularid
+        //Muudab selle ja kõigi child GridPane elementide jooned nähtavaks
         GridPane mainGridPane = (GridPane) pane.getChildren().get(0);
         mainGridPane.widthProperty().addListener(observable -> mainGridPane.resize(scene.getWidth(), scene.getHeight()));
         mainGridPane.heightProperty().addListener(observable -> mainGridPane.resize(scene.getWidth(), scene.getHeight()));
@@ -173,16 +174,14 @@ public class Main extends Application {
         notUrgImp index = 2
         notUrgNotImp index = 3
         */
-
-        addNewNoteToGridPane(0, childGridPanes[0]);
-        addNewNoteToGridPane(0, childGridPanes[0]);
-        addNewNoteToGridPane(0, childGridPanes[0]);
-
+        //Võtab põhipaanist ToolBari ja lisab sellele nuppude funktsionaalsuse
         ToolBar mainToolBar = (ToolBar) pane.getChildren().get(1);
         addButtonFunctionalityToToolBar(mainToolBar);
 
+        //Vormistab stseeni ja näitab lava
         root.getChildren().addAll(pane);
-        primaryStage.setTitle("Hello World");
+
+        primaryStage.setTitle("Priority Table");
         primaryStage.setScene(scene);
 
         primaryStage.show();
