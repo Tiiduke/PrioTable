@@ -180,9 +180,16 @@ public class Main extends Application {
 
         //Vormistab stseeni ja näitab lava
         root.getChildren().addAll(pane);
+        root.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                mouseState = MouseState.CLICK;
+            }
+        });
 
         primaryStage.setTitle("Priority Table");
         primaryStage.setScene(scene);
+
 
         primaryStage.show();
     }
