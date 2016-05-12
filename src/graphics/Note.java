@@ -28,8 +28,8 @@ public class Note {
 
         //Võtab paanilt TextArea childi ja lisab sellele suurustmuutvad kuularid
         textArea = (TextArea) pane.getChildren().get(0);
-        textArea.widthProperty().addListener(observable -> textArea.resize((pane.getWidth() - 10) * 0.85, (pane.getHeight() - 15) * 0.75));
-        textArea.heightProperty().addListener(observable -> textArea.resize((pane.getWidth() - 10) * 0.85, (pane.getHeight() - 15) * 0.75));
+        textArea.widthProperty().addListener(observable -> textArea.resize((pane.getWidth() - 40), (pane.getHeight() - 30)));
+        textArea.heightProperty().addListener(observable -> textArea.resize((pane.getWidth() - 40), (pane.getHeight() - 30)));
     }
     //Meetod märkme tehtud märkimiseks ja faili kirjutamiseks(et enda üle uhkust tunda)
     public void writeNoteToMarkDoneFile(){
